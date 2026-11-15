@@ -37,10 +37,14 @@
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ua = navigator.userAgent || "";
   const device = {
-    ios: /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
+    ios:
+      /iPad|iPhone|iPod/.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
     android: /Android/i.test(ua),
     // dentro de outro app (Claude, Instagram, Facebook...) ou de um iframe
-    inApp: window.self !== window.top || /FBAN|FBAV|Instagram|Line\/|; wv\)|Claude/i.test(ua),
+    inApp:
+      window.self !== window.top ||
+      /FBAN|FBAV|Instagram|Line\/|; wv\)|Claude/i.test(ua),
   };
 
   /* ---------- sons (gerados pelo navegador, sem arquivos) ---------- */
@@ -48,7 +52,8 @@
 
   function audio() {
     try {
-      if (!SND.ctx) SND.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!SND.ctx)
+        SND.ctx = new (window.AudioContext || window.webkitAudioContext)();
       if (SND.ctx.state === "suspended") SND.ctx.resume();
       return SND.ctx;
     } catch (e) {
@@ -65,7 +70,11 @@
     const gain = ctx.createGain();
     osc.type = o.type || "sine";
     osc.frequency.setValueAtTime(freq, t);
-    if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq + o.slide), t + dur);
+    if (o.slide)
+      osc.frequency.exponentialRampToValueAtTime(
+        Math.max(40, freq + o.slide),
+        t + dur,
+      );
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(o.vol || 0.18, t + 0.012);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -121,7 +130,8 @@
   document.addEventListener(
     "click",
     (e) => {
-      if (e.target.closest(".btn, .chips button, .avs label, summary, .top a")) sfx.click();
+      if (e.target.closest(".btn, .chips button, .avs label, summary, .top a"))
+        sfx.click();
     },
     true,
   );
@@ -155,7 +165,9 @@
     "Validação de dados",
     "Relatórios",
   ];
-  $("#mq").innerHTML = [...words, ...words].map((w) => `<span>${w}</span>`).join("");
+  $("#mq").innerHTML = [...words, ...words]
+    .map((w) => `<span>${w}</span>`)
+    .join("");
 
   /* ---------- ferramentas que guiam o trabalho ---------- */
   const skills = [
@@ -179,7 +191,11 @@
       "Automatiza e escala análises repetitivas.",
       "Agente com IA que responde perguntas sobre notas fiscais.",
     ],
-    ["KPIs", "Mostram se o resultado está no caminho.", "Realizado x meta e quanto falta para chegar lá."],
+    [
+      "KPIs",
+      "Mostram se o resultado está no caminho.",
+      "Realizado x meta e quanto falta para chegar lá.",
+    ],
     [
       "Validação",
       "Dado errado gera decisão errada.",
@@ -189,7 +205,10 @@
   let skill = 0;
   function drawSkills() {
     $("#chips").innerHTML = skills
-      .map((s, i) => `<button type="button" data-i="${i}" aria-pressed="${i === skill}">${s[0]}</button>`)
+      .map(
+        (s, i) =>
+          `<button type="button" data-i="${i}" aria-pressed="${i === skill}">${s[0]}</button>`,
+      )
       .join("");
     const s = skills[skill];
     $("#tool").innerHTML =
@@ -228,7 +247,9 @@
     if (!card) return;
     sfx.click();
     const name = card.dataset.t;
-    document.querySelectorAll(".tool").forEach((el) => el.classList.toggle("on", el.dataset.t === name));
+    document
+      .querySelectorAll(".tool")
+      .forEach((el) => el.classList.toggle("on", el.dataset.t === name));
     card.classList.remove("pop");
     void card.offsetWidth;
     card.classList.add("pop");
@@ -252,7 +273,11 @@
       "Pós em BI, Big Data e IA",
       "Pós-graduação pela Universidade Focus, unindo análise de dados e inteligência artificial.",
     ],
-    ["2025", "Oracle Next Education", "Formação em Data Science e IA pela Alura."],
+    [
+      "2025",
+      "Oracle Next Education",
+      "Formação em Data Science e IA pela Alura.",
+    ],
     [
       "Agora",
       "Power BI e projetos com IA",
@@ -273,7 +298,9 @@
   const fair = $("#fair");
   const video = $("#ride");
   $("#years").innerHTML = miles
-    .map((m, i) => `<button type="button" data-i="${i}"><i></i>${m[0]}</button>`)
+    .map(
+      (m, i) => `<button type="button" data-i="${i}"><i></i>${m[0]}</button>`,
+    )
     .join("");
   const yearBtns = [...document.querySelectorAll("#years button")];
   let current = -1;
@@ -330,7 +357,6 @@
     const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.outputEncoding = T.sRGBEncoding;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = T.PCFSoftShadowMap;
     renderer.domElement.className = "stage3d";
@@ -339,11 +365,13 @@
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(35, 1, 0.1, 100);
 
-    scene.add(new T.HemisphereLight(0xffffff, 0xf3d6e4, 1.0));
-    const sun = new T.DirectionalLight(0xffffff, 0.7);
+    scene.add(new T.HemisphereLight(0xffffff, 0xe8d4e0, 0.75));
+    const sun = new T.DirectionalLight(0xffffff, 0.55);
     sun.position.set(-5, 11, 7);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
+    sun.shadow.bias = -0.0015;
+    sun.shadow.normalBias = 0.03;
     sun.shadow.camera.left = -8;
     sun.shadow.camera.right = 8;
     sun.shadow.camera.top = 8;
@@ -402,7 +430,10 @@
       );
 
     // chão invisível que só recebe a sombra (o fundo é a imagem do parque)
-    const ground = new T.Mesh(new T.PlaneGeometry(30, 30), new T.ShadowMaterial({ opacity: 0.16 }));
+    const ground = new T.Mesh(
+      new T.PlaneGeometry(30, 30),
+      new T.ShadowMaterial({ opacity: 0.16 }),
+    );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
@@ -422,19 +453,28 @@
       ]),
       clay(CORAL),
     );
-    const baseRing = new T.Mesh(new T.TorusGeometry(2.2, 0.07, 16, 96), clay(BLUE));
+    const baseRing = new T.Mesh(
+      new T.TorusGeometry(2.2, 0.07, 16, 96),
+      clay(BLUE),
+    );
     baseRing.rotation.x = Math.PI / 2;
     baseRing.position.y = 0.14;
-    const pole = new T.Mesh(new T.CylinderGeometry(0.17, 0.21, 4.9, 48), clay(BLUE));
+    const pole = new T.Mesh(
+      new T.CylinderGeometry(0.17, 0.21, 4.9, 48),
+      clay(BLUE),
+    );
     pole.position.y = 2.85;
-    const collar1 = new T.Mesh(new T.TorusGeometry(0.22, 0.06, 16, 48), clay(GOLD));
+    const collar1 = new T.Mesh(
+      new T.TorusGeometry(0.22, 0.06, 16, 48),
+      clay(GOLD),
+    );
     collar1.rotation.x = Math.PI / 2;
     collar1.position.y = 0.5;
     const collar2 = collar1.clone();
     collar2.position.y = 2.6;
     [base, baseRing, pole, collar1, collar2].forEach((m) => {
       m.castShadow = true;
-      m.receiveShadow = true;
+      m.receiveShadow = false;
       scene.add(m);
     });
 
@@ -452,7 +492,6 @@
       sx.fillRect(i * 32, 0, 32, 8);
     }
     const stripeTex = new T.CanvasTexture(stripes);
-    stripeTex.encoding = T.sRGBEncoding;
     const domeMat = new T.MeshPhysicalMaterial({
       map: stripeTex,
       roughness: 0.4,
@@ -477,20 +516,32 @@
       domeMat,
     );
     dome.castShadow = true;
-    const rim = new T.Mesh(new T.TorusGeometry(2.66, 0.11, 20, 120), clay(CORAL));
+    const rim = new T.Mesh(
+      new T.TorusGeometry(2.66, 0.11, 20, 120),
+      clay(CORAL),
+    );
     rim.rotation.x = Math.PI / 2;
     const knob = new T.Mesh(new T.SphereGeometry(0.22, 32, 24), clay(GOLD));
     knob.position.y = 1.7;
-    const neck = new T.Mesh(new T.CylinderGeometry(0.05, 0.08, 0.25, 16), clay(GOLD));
+    const neck = new T.Mesh(
+      new T.CylinderGeometry(0.05, 0.08, 0.25, 16),
+      clay(GOLD),
+    );
     neck.position.y = 1.58;
-    const ringM = new T.Mesh(new T.TorusGeometry(2.25, 0.07, 16, 96), clay(GOLD));
+    const ringM = new T.Mesh(
+      new T.TorusGeometry(2.25, 0.07, 16, 96),
+      clay(GOLD),
+    );
     ringM.rotation.x = Math.PI / 2;
     ringM.position.y = -0.35;
     top.add(dome, rim, knob, neck, ringM);
     // babado: gotinhas arredondadas penduradas na borda
     for (let i = 0; i < 28; i++) {
       const a = (i / 28) * Math.PI * 2;
-      const drop = new T.Mesh(new T.SphereGeometry(0.2, 24, 16), clay(i % 2 ? CREAM : CORAL));
+      const drop = new T.Mesh(
+        new T.SphereGeometry(0.2, 24, 16),
+        clay(i % 2 ? CREAM : CORAL),
+      );
       drop.scale.set(1, 0.75, 0.6);
       drop.position.set(Math.cos(a) * 2.62, -0.16, Math.sin(a) * 2.62);
       drop.rotation.y = -a;
@@ -519,10 +570,11 @@
         tex.needsUpdate = true;
       };
       const tex = new T.CanvasTexture(c);
-      tex.encoding = T.sRGBEncoding;
       draw();
       if (document.fonts) document.fonts.ready.then(draw);
-      const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, depthTest: false }));
+      const sp = new T.Sprite(
+        new T.SpriteMaterial({ map: tex, depthTest: false }),
+      );
       sp.scale.set(1.05, 0.43, 1);
       sp.renderOrder = 5;
       return sp;
@@ -545,7 +597,10 @@
       holder.add(swing);
       const chainMat = clay(GOLD);
       [-0.24, 0.24].forEach((z) => {
-        const ch = new T.Mesh(new T.CylinderGeometry(0.02, 0.02, CHAIN, 10), chainMat);
+        const ch = new T.Mesh(
+          new T.CylinderGeometry(0.02, 0.02, CHAIN, 10),
+          chainMat,
+        );
         ch.position.set(0, -CHAIN / 2, z);
         swing.add(ch);
       });
@@ -640,14 +695,21 @@
       const wanted = Math.min(1.0, omega * 0.32);
       swingVel += ((wanted - swingNow) * 9 - swingVel * 3.2) * dt;
       swingNow += swingVel * dt;
-      chairs.forEach((c, k) => (c.swing.rotation.z = swingNow + Math.sin(t * 0.002 + k) * 0.015));
+      chairs.forEach(
+        (c, k) =>
+          (c.swing.rotation.z = swingNow + Math.sin(t * 0.002 + k) * 0.015),
+      );
 
       // câmera: aproxima no celular em pé e acompanha a inclinação/mouse
       camX += (wantX - camX) * Math.min(1, dt * 4);
       camY += (wantY - camY) * Math.min(1, dt * 4);
       const dist = Math.max(12.7, 15.2 / camera.aspect);
       const orbit = camX * 0.5;
-      camera.position.set(Math.sin(orbit) * dist, 3.6 + camY, Math.cos(orbit) * dist);
+      camera.position.set(
+        Math.sin(orbit) * dist,
+        3.6 + camY,
+        Math.cos(orbit) * dist,
+      );
       camera.lookAt(0, 3.1, 0);
 
       // cadeira com ano mais à frente
@@ -682,9 +744,14 @@
     const pt = new T.Vector2();
     renderer.domElement.addEventListener("click", (e) => {
       const r = renderer.domElement.getBoundingClientRect();
-      pt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      pt.set(
+        ((e.clientX - r.left) / r.width) * 2 - 1,
+        -((e.clientY - r.top) / r.height) * 2 + 1,
+      );
       ray.setFromCamera(pt, camera);
-      const hit = ray.intersectObjects(pickables, false).find((h) => h.object.userData.mile >= 0);
+      const hit = ray
+        .intersectObjects(pickables, false)
+        .find((h) => h.object.userData.mile >= 0);
       if (hit) {
         const i = hit.object.userData.mile;
         sfx.bell(i);
@@ -709,16 +776,16 @@
     let lastShake = 0;
     function onTilt(e) {
       if (e.gamma == null) return;
-      wantX = clamp(e.gamma / 35, -1, 1) * 1.2;
-      wantY = clamp(((e.beta || 45) - 45) / 40, -1, 1) * 1.2;
+      wantX = clamp(e.gamma / 45, -1, 1) * 0.45;
+      wantY = clamp(((e.beta || 45) - 45) / 50, -1, 1) * 0.5;
     }
     function onShake(e) {
       const a = e.acceleration || {};
       const g = Math.hypot(a.x || 0, a.y || 0, a.z || 0);
       const now = performance.now();
-      if (g > 13 && now - lastShake > 220) {
+      if (g > 9 && now - lastShake > 180) {
         lastShake = now;
-        push(Math.min(2.2, g / 12));
+        push(Math.min(3, g / 6));
       }
     }
     step(performance.now());
@@ -747,7 +814,10 @@
     // pede a permissão do próprio celular (no iPhone aparece a janela do sistema)
     async function enableSensors() {
       if (device.inApp) return sensorHelp("inapp");
-      if (device.ios && typeof DeviceMotionEvent.requestPermission === "function") {
+      if (
+        device.ios &&
+        typeof DeviceMotionEvent.requestPermission === "function"
+      ) {
         try {
           const ok = await DeviceMotionEvent.requestPermission();
           if (ok !== "granted") return sensorHelp("ios");
@@ -766,7 +836,7 @@
         if (gotMotion) {
           sensorBtn.textContent = "Sensores ativos: chacoalhe!";
           sensorBtn.disabled = true;
-          $("#spinHint").textContent = "chacoalhe ou toque para girar";
+          $("#spinHint").textContent = "chacoalhe ou toque";
           $("#spinHint").style.opacity = 1;
         } else {
           sensorBtn.textContent = "Ativar sensores do celular";
@@ -810,7 +880,8 @@
         video.playbackRate = clamp(rate, 0.1, 4);
         if (video.paused) video.play().catch(() => {});
       }
-      if (video.currentTime + 0.5 < lastTime) showMile((current + 1) % miles.length);
+      if (video.currentTime + 0.5 < lastTime)
+        showMile((current + 1) % miles.length);
       lastTime = video.currentTime;
       $("#speedBar").style.width = `${Math.min(100, (speed / 9) * 100)}%`;
       if (speed > 0) requestAnimationFrame(tick);
@@ -880,7 +951,8 @@
       `<path d="M13 38a9 9 0 0 1-1-18 12 12 0 0 1 23-3 10 10 0 0 1 2 21z" fill="#7dd3fc" stroke="#2c2f4a" stroke-width="2.5" stroke-linejoin="round"/>${FACE(24, 28)}`,
     ],
   };
-  const avSvg = (k) => `<svg viewBox="0 0 48 48" aria-hidden="true">${(AV[k] || AV.planilha)[1]}</svg>`;
+  const avSvg = (k) =>
+    `<svg viewBox="0 0 48 48" aria-hidden="true">${(AV[k] || AV.planilha)[1]}</svg>`;
   const crown =
     '<svg class="crown" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" fill="#f2b705" stroke="#b38600" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 
@@ -899,13 +971,19 @@
       "2º lugar! Só a dona do estacionamento está na sua frente.",
       "Vice-líder! Seu nome subiu no ORDER BY, logo abaixo da Thalissa.",
     ],
-    podio: ["Pódio! Os dados não mentem: você é fera.", "Top 3! Medalha garantida no relatório do mês."],
+    podio: [
+      "Pódio! Os dados não mentem: você é fera.",
+      "Top 3! Medalha garantida no relatório do mês.",
+    ],
     lose: [
       "#N/D na vitória… mas todo analista revisa a fórmula e tenta de novo.",
       "Deu erro na consulta. Ajusta o WHERE e bora de novo!",
       "Até o melhor dashboard começou como uma planilha bagunçada.",
     ],
-    ok: ["Dados registrados. Agora é buscar a tendência de alta!", "Média respeitável. Bora virar outlier?"],
+    ok: [
+      "Dados registrados. Agora é buscar a tendência de alta!",
+      "Média respeitável. Bora virar outlier?",
+    ],
   };
 
   const OWNER = { n: "Thalissa", a: "grafico" };
@@ -932,7 +1010,8 @@
       .join("");
     $("#rk").innerHTML = owner + rows;
     const n = list.length + 1;
-    $("#count").textContent = n + (n === 1 ? " participante" : " participantes");
+    $("#count").textContent =
+      n + (n === 1 ? " participante" : " participantes");
   }
 
   // a dona do jogo sempre fica em 1º: se alguém passar, a pontuação dela sobe
@@ -948,7 +1027,9 @@
     const av = store.get("av") || "planilha";
     return `<form class="form" id="rf">
       <label>Seu nome ou apelido<input type="text" id="nick" maxlength="14" autocomplete="nickname" value="${esc(nick)}" placeholder="Ex.: Rainha do PROCX"></label>
-      <fieldset class="avs"><legend>Escolha seu personagem</legend>${Object.keys(AV)
+      <fieldset class="avs"><legend>Escolha seu personagem</legend>${Object.keys(
+        AV,
+      )
         .map(
           (k) =>
             `<label><input type="radio" name="av" value="${k}" ${k === av ? "checked" : ""}>${avSvg(k)}${AV[k][0]}</label>`,
@@ -969,7 +1050,8 @@
         $("#nick").placeholder = "Digite um apelido para entrar";
         return;
       }
-      const a = (f.querySelector("input[name=av]:checked") || {}).value || "planilha";
+      const a =
+        (f.querySelector("input[name=av]:checked") || {}).value || "planilha";
       store.set("nick", n);
       store.set("av", a);
       const t = Date.now();
@@ -994,7 +1076,9 @@
   function analyze(run) {
     const log = run.log;
     const ok = log.filter((x) => x.ok);
-    const avg = ok.length ? ok.reduce((s, x) => s + x.ms, 0) / ok.length / 1000 : 0;
+    const avg = ok.length
+      ? ok.reduce((s, x) => s + x.ms, 0) / ok.length / 1000
+      : 0;
     const fastest = ok.length ? Math.min(...ok.map((x) => x.ms)) / 1000 : 0;
     const prec = log.length ? ok.length / log.length : 0;
     const dirs = DIRS.map((d) => {
@@ -1008,7 +1092,9 @@
       };
     });
     const vans = log.filter((x) => x.van);
-    const vanRatio = vans.length ? vans.filter((x) => x.ok).length / vans.length : 1;
+    const vanRatio = vans.length
+      ? vans.filter((x) => x.ok).length / vans.length
+      : 1;
 
     const pace = !avg
       ? "Sem dados"
@@ -1021,8 +1107,10 @@
             : "Cauteloso";
     const good = [];
     const bad = [];
-    if (prec >= 0.85 && log.length >= 4) good.push("Precisão: quase não rodou etapas fora de ordem.");
-    if (avg && avg < 1.6) good.push("Velocidade: decide rápido qual registro liberar.");
+    if (prec >= 0.85 && log.length >= 4)
+      good.push("Precisão: quase não rodou etapas fora de ordem.");
+    if (avg && avg < 1.6)
+      good.push("Velocidade: decide rápido qual registro liberar.");
     const tried = dirs.filter((d) => d.total >= 2);
     const best = tried.slice().sort((a, b) => b.ratio - a.ratio)[0];
     const worst = tried.slice().sort((a, b) => a.ratio - b.ratio)[0];
@@ -1031,7 +1119,8 @@
         `Leitura de fluxo: acertou ${Math.round(best.ratio * 100)}% dos carros virados para ${best.d}.`,
       );
     if (run.lv >= 2) good.push(`Fôlego: liberou ${run.lv} fases seguidas.`);
-    if (vans.length >= 2 && vanRatio >= 0.8) good.push("Registros grandes: liberou bem as vans.");
+    if (vans.length >= 2 && vanRatio >= 0.8)
+      good.push("Registros grandes: liberou bem as vans.");
 
     if (prec < 0.7 && log.length >= 3)
       bad.push(
@@ -1043,9 +1132,11 @@
       );
     if (worst && worst.ratio < 0.7 && worst !== best)
       bad.push(`Ponto cego: errou mais os carros virados para ${worst.d}.`);
-    if (vans.length >= 2 && vanRatio < 0.6) bad.push("As vans (registros maiores) travaram você mais vezes.");
+    if (vans.length >= 2 && vanRatio < 0.6)
+      bad.push("As vans (registros maiores) travaram você mais vezes.");
 
-    if (!good.length) good.push("Persistência: encarou o engarrafamento até o fim.");
+    if (!good.length)
+      good.push("Persistência: encarou o engarrafamento até o fim.");
     if (!bad.length)
       bad.push(
         log.length < 6
@@ -1113,7 +1204,8 @@
       W = L * 50,
       col = c.col,
       glass = "#4a4f7a";
-    const wh = (x, y) => `<rect x="${x}" y="${y}" width="14" height="7" rx="3" fill="#3a3d5c"/>`;
+    const wh = (x, y) =>
+      `<rect x="${x}" y="${y}" width="14" height="7" rx="3" fill="#3a3d5c"/>`;
     let g = wh(12, 1) + wh(12, 42) + wh(W - 26, 1) + wh(W - 26, 42);
     if (L === 3) g += wh(W / 2 - 7, 1) + wh(W / 2 - 7, 42);
     g += `<rect x="3" y="8" width="${W - 6}" height="40" rx="14" fill="rgba(0,0,0,.28)"/>
@@ -1144,7 +1236,10 @@
         : `translate(0,${W}) rotate(-90)`;
     return `<svg viewBox="${vb}" aria-hidden="true"><g transform="${tr}">${g}</g></svg>`;
   }
-  const cellsOf = (c) => Array.from({ length: c.L }, (_, i) => (c.h ? [c.x + i, c.y] : [c.x, c.y + i]));
+  const cellsOf = (c) =>
+    Array.from({ length: c.L }, (_, i) =>
+      c.h ? [c.x + i, c.y] : [c.x, c.y + i],
+    );
   function probe(c, cars) {
     const occ = new Map();
     cars.forEach((o) => {
@@ -1219,8 +1314,10 @@
     "#b5e3e8": "azul-água",
     "#c8e6a0": "verde-limão",
   };
-  const blocker = (c) => (c.L === 3 ? "da van " : "do carro ") + (CNAME[c.col] || "");
-  const dirOf = (c) => (c.h ? (c.d > 0 ? "direita" : "esquerda") : c.d > 0 ? "baixo" : "cima");
+  const blocker = (c) =>
+    (c.L === 3 ? "da van " : "do carro ") + (CNAME[c.col] || "");
+  const dirOf = (c) =>
+    c.h ? (c.d > 0 ? "direita" : "esquerda") : c.d > 0 ? "baixo" : "cima";
 
   let J = null;
   let RUN = null;
@@ -1318,7 +1415,8 @@
     else if (dy < 0) pts = [[cx, -m], TR, out];
     else if (dx < 0) pts = [[-m, cy], [-m, -m], TR, out];
     else pts = [[cx, S + m], [S + m, S + m], TR, out];
-    const ang = (p, q) => (Math.atan2(q[1] - p[1], q[0] - p[0]) * 180) / Math.PI;
+    const ang = (p, q) =>
+      (Math.atan2(q[1] - p[1], q[0] - p[0]) * 180) / Math.PI;
     const a0 = c.h ? (c.d > 0 ? 0 : 180) : c.d > 0 ? 90 : -90;
     let prev = [cx, cy],
       rot = 0,
@@ -1387,7 +1485,8 @@
         if (!J.cars.length) winLevel();
       };
       sfx.vroom();
-      $("#msg").textContent = `Registro ${J.total - J.cars.length} de ${J.total} processado ✓`;
+      $("#msg").textContent =
+        `Registro ${J.total - J.cars.length} de ${J.total} processado ✓`;
       return;
     }
 
@@ -1460,8 +1559,17 @@
     }
     run.ownerBumped = guardOwner(run.score);
     setRecord();
-    const key = run.ownerBumped ? "owner" : isBest ? "pb" : lost ? "lose" : "ok";
-    setTimeout(() => (isBest ? sfx.record() : lost ? sfx.lose() : sfx.ok()), 150);
+    const key = run.ownerBumped
+      ? "owner"
+      : isBest
+        ? "pb"
+        : lost
+          ? "lose"
+          : "ok";
+    setTimeout(
+      () => (isBest ? sfx.record() : lost ? sfx.lose() : sfx.ok()),
+      150,
+    );
     $("#stage").innerHTML = `<div class="result">
       <div class="score ${lost ? "lost" : ""}"><small>${lost ? "O fluxo de dados travou!" : "Partida encerrada"}</small><b>${run.score} pontos</b><small>${run.lv ? "Fases liberadas: " + run.lv : "Nenhuma fase liberada"}</small></div>
       <p class="phrase" id="phrase">${pick(PH[key])}</p>
