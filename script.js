@@ -772,95 +772,9 @@
       wantY = 0;
     });
 
-    // sensores do celular: inclinar move a câmera, chacoalhar faz girar
-    let lastShake = 0;
-    function onTilt(e) {
-      if (e.gamma == null) return;
-      wantX = clamp(e.gamma / 45, -1, 1) * 0.45;
-      wantY = clamp(((e.beta || 45) - 45) / 50, -1, 1) * 0.5;
-    }
-    function onShake(e) {
-      const a = e.acceleration || {};
-      const g = Math.hypot(a.x || 0, a.y || 0, a.z || 0);
-      const now = performance.now();
-      if (g > 9 && now - lastShake > 180) {
-        lastShake = now;
-        push(Math.min(3, g / 6));
-      }
-    }
     step(performance.now());
     video.hidden = true;
-
-    const sensorBtn = $("#sensors");
-    const isTouch = matchMedia("(pointer: coarse)").matches;
-    if ("DeviceMotionEvent" in window && isTouch) {
-      sensorBtn.hidden = false;
-      sensorBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        enableSensors();
-      });
-      $("#sheetRetry").addEventListener("click", () => {
-        $("#sheet").hidden = true;
-        enableSensors();
-      });
-    }
-
-    let gotMotion = false;
-    function onMotionData(e) {
-      if (e.acceleration && e.acceleration.x != null) gotMotion = true;
-      onShake(e);
-    }
-
-    // pede a permissão do próprio celular (no iPhone aparece a janela do sistema)
-    async function enableSensors() {
-      if (device.inApp) return sensorHelp("inapp");
-      if (
-        device.ios &&
-        typeof DeviceMotionEvent.requestPermission === "function"
-      ) {
-        try {
-          const ok = await DeviceMotionEvent.requestPermission();
-          if (ok !== "granted") return sensorHelp("ios");
-          if (typeof DeviceOrientationEvent.requestPermission === "function") {
-            await DeviceOrientationEvent.requestPermission().catch(() => {});
-          }
-        } catch (err) {
-          return sensorHelp("ios");
-        }
-      }
-      // no Android o Chrome libera os sensores direto, sem perguntar
-      window.addEventListener("devicemotion", onMotionData);
-      window.addEventListener("deviceorientation", onTilt);
-      sensorBtn.textContent = "Ligando sensores…";
-      setTimeout(() => {
-        if (gotMotion) {
-          sensorBtn.textContent = "Sensores ativos: chacoalhe!";
-          sensorBtn.disabled = true;
-          $("#spinHint").textContent = "chacoalhe ou toque";
-          $("#spinHint").style.opacity = 1;
-        } else {
-          sensorBtn.textContent = "Ativar sensores do celular";
-          sensorHelp(device.ios ? "ios" : device.android ? "android" : "other");
-        }
-      }, 1200);
-    }
   }
-
-  function sensorHelp(kind) {
-    const steps = {
-      inapp: `<p>Você está abrindo o site dentro de um aplicativo, e ele bloqueia os sensores.</p>
-        <ol><li>Toque no menu <b>⋮</b> ou <b>…</b> no canto da tela.</li><li>Escolha <b>Abrir no navegador</b> (${device.ios ? "Safari" : "Chrome"}).</li><li>Toque de novo em <b>Ativar sensores</b>.</li></ol>`,
-      ios: `<p>O iPhone pergunta só uma vez. Se você tocou em <b>Não permitir</b>:</p>
-        <ol><li>Feche esta aba do Safari.</li><li>Abra o site de novo.</li><li>Toque em <b>Ativar sensores</b> e depois em <b>Permitir</b>.</li></ol>`,
-      android: `<p>Os sensores estão bloqueados neste site. Para liberar no Chrome:</p>
-        <ol><li>Toque no ícone à esquerda do endereço do site.</li><li>Abra <b>Permissões</b> ou <b>Configurações do site</b>.</li><li>Em <b>Sensores de movimento</b>, escolha <b>Permitir</b>.</li><li>Volte e toque em <b>Tentar de novo</b>.</li></ol>`,
-      other: `<p>Este navegador não liberou os sensores. Abra o site no <b>Chrome</b> (Android) ou no <b>Safari</b> (iPhone).</p>`,
-    };
-    $("#sheetBody").innerHTML = steps[kind] || steps.other;
-    $("#sheetRetry").hidden = kind === "inapp";
-    $("#sheet").hidden = false;
-  }
-  $("#sheetClose").addEventListener("click", () => ($("#sheet").hidden = true));
 
   /* ----- plano B: vídeo controlado pelos toques ----- */
   function useVideo() {
