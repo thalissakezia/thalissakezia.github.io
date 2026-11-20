@@ -1,6 +1,6 @@
 # Thalissa Silva | Análise de Dados & BI
 
-Currículo interativo: 👉 https://thalissakezia.github.io
+Currículo interativo: https://thalissakezia.github.io
 
 <p align="center">
   <img src="jornada.gif" width="300" alt="Jornada em 3D: brinquedo girando com os toques">
